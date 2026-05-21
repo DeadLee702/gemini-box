@@ -2,6 +2,7 @@ use ed25519_dalek::{Signature, VerifyingKey};
 use std::io::Read;
 use zip::ZipArchive;
 
+// SANS Challenge Gauntlet: Active - Cryptographic validation tests in progress
 // Include the public key from test/pubkey.hex at compile time
 const PUBKEY_HEX: &str = include_str!("../../test/pubkey.hex");
 
