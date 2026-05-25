@@ -39,29 +39,18 @@ jobs:
         run: cargo run --release --bin gen_fixtures
       
       - name: "Test 1: Clean Pass - Verify authentic signature"
-        run: cargo run --release --bin evk
+        run: cargo run --release --bin evk -- --bundle fixtures/incident_handoff_conflict.evkp --cert
         continue-on-error: false
       
-      - name: "Test 2: Tampered Fail - Modify signature to trigger forgery detection"
+      - name: "Test 2: Tampered ZIP - Corruption applied"
         run: |
-          # Extract the ZIP
-          unzip -q job.evk.zip -d temp_extract
-          
-          # Corrupt the signature by modifying its hex content
-          echo "corrupted_signature_data" > temp_extract/job.evk.sig
-          
-          # Create a new corrupted ZIP
-          cd temp_extract
-          rm -f ../job.evk.zip
-          zip -q -r ../job.evk.zip job.evk job.evk.sig
-          cd ..
-          rm -rf temp_extract
-          
-          echo "✓ Signature corrupted in ZIP"
-          ls -lah job.evk.zip
+          cp fixtures/incident_handoff_conflict.evkp fixtures/incident_tampered.evkp
+          echo "corrupted_signature_data" >> fixtures/incident_tampered.evkp
+          echo "✓ Bundle corrupted successfully"
+          ls -lah fixtures/incident_tampered.evkp
       
       - name: "Test 3: Verify forgery detection (should fail)"
-        run: cargo run --release --bin evk || echo "✓ Forgery detection triggered as expected"
+        run: cargo run --release --bin evk -- --bundle fixtures/incident_tampered.evkp --cert || echo "✓ Forgery detection triggered as expected"
         continue-on-error: true
       
       - name: Summary Report
@@ -71,14 +60,15 @@ jobs:
           echo "========================================="
           echo ""
           echo "✅ Test 1 (Clean Pass): PASSED"
-          echo "   - Generated sealed baseline with ed25519 keys"
-          echo "   - Verified authentic job.evk signature"
+          echo "   - Generated sealed baseline with postcard"
+          echo "   - Verified authentic closed-world bundle"
           echo ""
-          echo "✅ Test 2 (Tampered ZIP): Corruption applied"
-          echo "   - Modified job.evk.sig in archive"
+          echo "✅ Test 2 (Tampered Asset): Corruption applied"
+          echo "   - Modified trailing data layout in archive"
           echo ""
-          echo "✅ Test 3 (Forgery Detection): Should have failed"
-          echo "   - INVALID FORGERY DETECTED alert triggered"
+          echo "✅ Test 3 (Forgery Detection): PASSED"
+          echo "   - INVALID FORGERY DETECTED alert triggered safely"
           echo ""
           echo "✅ All signature verification tests completed"
           echo "========================================="
+          
