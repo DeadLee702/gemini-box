@@ -1,5 +1,5 @@
-use ed25519_dalek::{Signature, VerifyingKey};
-use std::io::Read;
+use ed25519_dalek::{Signature, VerifyingKey, Verifier};
+use std::io::{Read, Write};
 use zip::ZipArchive;
 
 // SANS Challenge Gauntlet: Active - Cryptographic validation tests in progress
@@ -55,7 +55,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let signature = Signature::from_bytes(&signature_bytes.as_slice().try_into()?)
         .map_err(|e| format!("Invalid signature format: {}", e))?;
 
-    // Verify the signature
+    // Verify the signature using the Verifier trait
     match verify_key.verify(&job_evk_content, &signature) {
         Ok(()) => {
             println!("\n✅ SUCCESS: Signature verification passed");
