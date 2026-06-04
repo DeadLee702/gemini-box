@@ -10,10 +10,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Ensure test directory exists
     fs::create_dir_all("test")?;
 
-    // Generate OS-backed entropy key using ed25519-dalek v2.2 API
-    let mut csprng = OsRng;
-    let mut secret_bytes = [0u8; 32];
-    csprng.fill_bytes(&mut secret_bytes);
+    // Generate a random 32-byte secret for ed25519-dalek v2.2
+    let mut secret_bytes: [u8; 32] = [0u8; 32];
+    OsRng.fill_bytes(&mut secret_bytes);
+    
+    // Create the signing key from the secret bytes
     let signing_key = SigningKey::from_bytes(&secret_bytes);
     let verify_key = signing_key.verifying_key();
 
