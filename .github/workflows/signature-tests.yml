@@ -22,6 +22,59 @@ jobs:
       - name: Generate sealed cryptographic baseline
         run: cargo run --release --bin gen_fixtures
       
+      - name: Verify Artifacts
+        run: |
+          echo "=== Comprehensive Artifact Verification ==="
+          echo ""
+          echo "Current working directory:"
+          pwd
+          echo ""
+          echo "=== Root directory contents ==="
+          ls -lhF
+          echo ""
+          echo "=== Test directory contents ==="
+          if [ -d "test" ]; then
+            ls -lhF test/
+          else
+            echo "ERROR: test/ directory does not exist!"
+            exit 1
+          fi
+          echo ""
+          echo "=== Artifact Verification ==="
+          
+          # Check for pubkey.hex
+          if [ -f "test/pubkey.hex" ]; then
+            echo "✓ test/pubkey.hex exists"
+            echo "  Size: $(stat -c%s test/pubkey.hex) bytes"
+            echo "  First 64 chars: $(head -c 64 test/pubkey.hex)"
+          else
+            echo "✗ CRITICAL: test/pubkey.hex NOT FOUND"
+            exit 1
+          fi
+          
+          # Check for job.evk
+          if [ -f "job.evk" ]; then
+            echo "✓ job.evk exists (root)"
+            echo "  Size: $(stat -c%s job.evk) bytes"
+          else
+            echo "✗ CRITICAL: job.evk NOT FOUND in root"
+            exit 1
+          fi
+          
+          # Check for job.evk.zip
+          if [ -f "job.evk.zip" ]; then
+            echo "✓ job.evk.zip exists (root)"
+            echo "  Size: $(stat -c%s job.evk.zip) bytes"
+            echo "  Contents:"
+            unzip -l job.evk.zip
+          else
+            echo "✗ CRITICAL: job.evk.zip NOT FOUND in root"
+            exit 1
+          fi
+          
+          echo ""
+          echo "✅ All critical artifacts verified successfully!"
+      
       - name: Verify fixture files were created
         run: |
           echo "=== Verifying generated fixtures ==="
