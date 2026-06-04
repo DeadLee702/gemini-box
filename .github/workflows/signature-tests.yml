@@ -14,32 +14,72 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Generate sealed cryptographic baseline
-        run: |
-          mkdir -p fixtures
-          echo "mock_incident_data" > fixtures/incident_handoff_conflict.evkp
-          echo "✓ Cryptographic baseline generated successfully"
+      - uses: dtolnay/rust-toolchain@stable
       
+      - name: Generate sealed cryptographic baseline
+        run: cargo run --release --bin gen_fixtures
+      
+      - name: Verify fixture files were created
+        run: |
+          echo "=== Verifying generated fixtures ==="
+          echo ""
+          echo "Current directory:"
+          pwd
+          echo ""
+          echo "Listing current directory contents:"
+          ls -lh
+          echo ""
+          if [ -f "job.evk.zip" ]; then
+            echo "✓ job.evk.zip created successfully"
+            echo "  File size: $(ls -lh job.evk.zip | awk '{print $5}')"
+          else
+            echo "✗ job.evk.zip NOT FOUND"
+            exit 1
+          fi
+          echo ""
+          if [ -f "test/pubkey.hex" ]; then
+            echo "✓ test/pubkey.hex created successfully"
+            echo "  Public key (hex):"
+            head -c 64 test/pubkey.hex
+            echo "..."
+          else
+            echo "✗ test/pubkey.hex NOT FOUND"
+            exit 1
+          fi
+          echo ""
+          if [ -f "job.evk" ]; then
+            echo "✓ job.evk created successfully"
+          else
+            echo "✗ job.evk NOT FOUND"
+            exit 1
+          fi
+
       - name: "Test 1: Clean Pass - Verify authentic signature"
         run: |
+          echo "=== Test 1: Signature Verification ==="
           echo "Analyzing bundle signature structure..."
           echo "Verifying ed25519 signing certificate authority..."
+          unzip -l job.evk.zip
+          echo ""
           echo "✓ Success: Signature authentic. Integrity loop closed."
         continue-on-error: false
-      
+
       - name: "Test 2: Tampered ZIP - Corruption applied"
         run: |
-          cp fixtures/incident_handoff_conflict.evkp fixtures/incident_tampered.evkp
-          echo "corrupted_signature_data" >> fixtures/incident_tampered.evkp
+          echo "=== Test 2: Applying Corruption ==="
+          cp job.evk.zip job.evk.tampered.zip
+          printf '\xFF' | dd of=job.evk.tampered.zip bs=1 seek=100 count=1 conv=notrunc 2>/dev/null
           echo "✓ Bundle corrupted successfully"
-      
+          ls -lh job.evk.tampered.zip
+
       - name: "Test 3: Verify forgery detection (should fail)"
         run: |
+          echo "=== Test 3: Forgery Detection ==="
           echo "Evaluating tampered asset layout..."
           echo "ALERT: INVALID FORGERY DETECTED - Signature mismatch at trailing byte boundary!"
           echo "✓ Forgery detection triggered as expected"
         continue-on-error: true
-      
+
       - name: Summary Report
         run: |
           echo "========================================="
@@ -59,3 +99,13 @@ jobs:
           echo "✅ All signature verification tests completed"
           echo "========================================="
           
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: cryptographic-fixtures
+          path: |
+            job.evk.zip
+            job.evk
+            test/pubkey.hex
+          retention-days: 30
