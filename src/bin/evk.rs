@@ -14,7 +14,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pubkey_bytes = hex::decode(PUBKEY_HEX.trim())
         .map_err(|e| format!("Failed to decode public key hex: {}", e))?;
 
-    let verify_key = VerifyingKey::from_bytes(&pubkey_bytes.as_slice().try_into()?)
+    let pubkey_array: [u8; 32] = pubkey_bytes.as_slice().try_into()
+        .map_err(|_| "Public key must be exactly 32 bytes")?;
+
+    let verify_key = VerifyingKey::from_bytes(&pubkey_array)
         .map_err(|e| format!("Invalid public key: {}", e))?;
 
     println!("✓ Loaded public key (hex): {}", PUBKEY_HEX.trim());
@@ -55,8 +58,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let signature_bytes = hex::decode(signature_hex.trim())
         .map_err(|e| format!("Failed to decode signature hex: {}", e))?;
 
-    let signature = Signature::from_bytes(&signature_bytes.as_slice().try_into()?)
-        .map_err(|e| format!("Invalid signature format: {}", e))?;
+    // Convert to fixed array and create Signature (no map_err needed)
+    let signature_array: [u8; 64] = signature_bytes.as_slice().try_into()
+        .map_err(|_| "Signature must be exactly 64 bytes")?;
+    
+    let signature = Signature::from_bytes(&signature_array);
 
     // Verify the signature using the Verifier trait
     match verify_key.verify(&job_evk_content, &signature) {
