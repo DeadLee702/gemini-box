@@ -1,5 +1,5 @@
 use ed25519_dalek::{Signature, VerifyingKey, Verifier};
-use std::io::{Read, Write};
+use std::io::Read;
 use zip::ZipArchive;
 
 // SANS Challenge Gauntlet: Active - Cryptographic validation tests in progress
@@ -38,12 +38,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("✓ Extracted job.evk from ZIP ({} bytes)", job_evk_content.len());
 
     // Extract signature from ZIP
-    let mut signature_hex = String::new();
+    let mut signature_bytes_vec = Vec::new();
     archive
         .by_name("job.evk.sig")
         .map_err(|e| format!("Failed to find job.evk.sig in ZIP: {}", e))?
-        .read_to_string(&mut signature_hex)
+        .read_to_end(&mut signature_bytes_vec)
         .map_err(|e| format!("Failed to read job.evk.sig: {}", e))?;
+
+    let signature_hex = String::from_utf8(signature_bytes_vec)
+        .map_err(|e| format!("Failed to parse signature as UTF-8: {}", e))?;
 
     println!("✓ Extracted job.evk.sig from ZIP");
     println!("  Signature (hex): {}", signature_hex.trim());
