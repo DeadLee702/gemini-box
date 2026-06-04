@@ -1,5 +1,5 @@
 use ed25519_dalek::{SigningKey, Signer};
-use rand_core::OsRng;
+use rand_core::{OsRng, RngCore};
 use std::fs;
 use std::io::Write;
 use std::path::Path;
@@ -10,14 +10,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Ensure test directory exists
     fs::create_dir_all("test")?;
 
-    // Generate OS-backed entropy key using ed25519-dalek v2.1 API
+    // Generate OS-backed entropy key using ed25519-dalek v2.2 API
     let mut csprng = OsRng;
-    let secret_bytes = {
-        let mut bytes = [0u8; 32];
-        use rand_core::RngCore;
-        csprng.fill_bytes(&mut bytes);
-        bytes
-    };
+    let mut secret_bytes = [0u8; 32];
+    csprng.fill_bytes(&mut secret_bytes);
     let signing_key = SigningKey::from_bytes(&secret_bytes);
     let verify_key = signing_key.verifying_key();
 
