@@ -46,3 +46,9 @@ This will:
 - `rand_core` - OS-backed random number generation
 - `hex` - Hex encoding/decoding
 - `zip` - ZIP archive support
+
+## Related Projects
+This is part of a three-layer deterministic verification stack:
+- **[evk](https://github.com/DeadLee702/evk)** (Bundle validation & determinism)
+- **[gemini-box](https://github.com/DeadLee702/gemini-box)** ← You are here (Cryptographic signing & verification)
+- **[adversarial-compliance-matrix](https://github.com/DeadLee702/adversarial-compliance-matrix)** (12 incident detection tests)
