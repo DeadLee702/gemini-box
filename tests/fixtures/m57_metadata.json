@@ -1,0 +1,42 @@
+{
+  "case_name": "NIST M57 Patents Case",
+  "source": "http://www.cfreds.nist.gov/data/M57-Patents/",
+  "description": "Real forensic case containing multiple incident types for validation",
+  "expected_incidents": [
+    {
+      "type": "Log Truncation",
+      "code": "0x1C2B",
+      "description": "Critical log entries have been removed"
+    },
+    {
+      "type": "File Deletion",
+      "code": "0x0D44",
+      "description": "Deleted files with orphaned metadata"
+    },
+    {
+      "type": "Timestamp Drift",
+      "code": "0x2B11",
+      "description": "Modified file timestamps"
+    },
+    {
+      "type": "Registry Modification",
+      "code": "0x1B88",
+      "description": "Windows registry alterations"
+    }
+  ],
+  "test_images": [
+    {
+      "filename": "nps-2008-6701.E01",
+      "size_gb": 0.5,
+      "format": "Encase E01",
+      "checksum_type": "MD5"
+    }
+  ],
+  "validation_steps": [
+    "Download E01 from NIST CFReDS",
+    "Extract with e01_extract binary",
+    "Run through evk packer",
+    "Classify with adversarial-compliance-matrix",
+    "Compare results with known incidents"
+  ]
+}
