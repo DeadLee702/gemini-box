@@ -1,5 +1,11 @@
 # Gemini Box
 
+## 🏆 FIND EVIL! Hackathon Submission
+
+**[View Full Submission on Devpost →](https://devpost.com/software/gemini-box-m0kxy1)**
+
+Part of the 3-layer incident detection stack for Protocol SIFT. Multi-Agent Framework entry with 12/12 tests passing.
+
 A Rust project for ed25519 signature generation and verification with ZIP archiving.
 
 ## Features
@@ -48,7 +54,12 @@ This will:
 - `zip` - ZIP archive support
 
 ## Related Projects
+
 This is part of a three-layer deterministic verification stack:
 - **[evk](https://github.com/DeadLee702/evk)** (Bundle validation & determinism)
 - **[gemini-box](https://github.com/DeadLee702/gemini-box)** ← You are here (Cryptographic signing & verification)
 - **[adversarial-compliance-matrix](https://github.com/DeadLee702/adversarial-compliance-matrix)** (12 incident detection tests)
+
+## License
+
+MIT License - See LICENSE file for details
