@@ -1,6 +1,29 @@
 use std::path::PathBuf;
 use anyhow::Result;
-use gemini_box::E01Reader;
+
+// Placeholder E01Reader - libewf-rs crate doesn't exist on crates.io
+// TODO: Implement with libewf-sys or pure Rust parser when ready
+pub struct E01Reader;
+
+impl E01Reader {
+    pub fn open(_path: &str) -> Result<Self> {
+        anyhow::bail!("E01Reader not yet implemented - waiting for valid libewf binding")
+    }
+
+    pub fn get_metadata(&self) -> Result<E01Metadata> {
+        anyhow::bail!("Not implemented")
+    }
+
+    pub fn extract_artifacts(&self) -> Result<Vec<u8>> {
+        anyhow::bail!("Not implemented")
+    }
+}
+
+pub struct E01Metadata {
+    pub format: String,
+    pub total_sectors: u64,
+    pub sector_size: u32,
+}
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
@@ -13,30 +36,9 @@ fn main() -> Result<()> {
 
     let e01_path = &args[1];
     
-    println!("[*] Opening E01 image: {}", e01_path);
-    let reader = E01Reader::open(e01_path)?;
-
-    println!("[*] Reading metadata...");
-    let metadata = reader.get_metadata()?;
-    println!("[+] Format: {}", metadata.format);
-    println!("[+] Sectors: {}", metadata.total_sectors);
-    println!("[+] Sector size: {} bytes", metadata.sector_size);
-
-    println!("[*] Extracting artifacts...");
-    let artifacts = reader.extract_artifacts()?;
-    
-    println!("[+] Extracted {} bytes", artifacts.len());
-    println!("[+] Status code: 0x{:04X}", 
-        u16::from_le_bytes([artifacts[0], artifacts[1]]));
-
-    // Write output bundle
-    let output_path = PathBuf::from(e01_path)
-        .file_stem()
-        .map(|s| format!("{}.bin", s.to_string_lossy()))
-        .unwrap_or_else(|| "output.bin".to_string());
-
-    std::fs::write(&output_path, &artifacts)?;
-    println!("[+] Artifacts written to: {}", output_path);
+    println!("[*] E01Reader not yet implemented");
+    println!("[*] Path provided: {}", e01_path);
+    println!("[!] TODO: Integrate libewf-sys or pure Rust E01 parser");
 
     Ok(())
 }
