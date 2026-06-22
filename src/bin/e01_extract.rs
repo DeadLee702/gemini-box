@@ -1,8 +1,6 @@
 use std::path::PathBuf;
 use anyhow::Result;
-
-mod e01_reader;
-use e01_reader::E01Reader;
+use gemini_box::E01Reader;
 
 fn main() -> Result<()> {
     let args: Vec<String> = std::env::args().collect();
