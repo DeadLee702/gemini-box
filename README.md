@@ -1,65 +1,18 @@
-# Gemini Box
+# gemini-box - Cryptographic Signing Layer
 
-## 🏆 FIND EVIL! Hackathon Submission
+ed25519 signing for EVK Stack evidence bundles. Adds non-repudiation to deterministic `.evkp` artifacts.
 
-**[View Full Submission on Devpost →](https://devpost.com/software/gemini-box-m0kxy1)**
-
-Part of the 3-layer incident detection stack for Protocol SIFT. Multi-Agent Framework entry with 12/12 tests passing.
-
-A Rust project for ed25519 signature generation and verification with ZIP archiving.
-
-## Features
-
-- **ed25519-dalek** for asymmetric cryptography
-- OS-backed entropy for key generation
-- ZIP archive support for job.evk and signatures
-- Compile-time public key inclusion via `include_str!`
-- Strict forgery detection
+## Core Function
+1. **Sign**: Generate ed25519 keypair, sign bundle hash
+2. **Verify**: Verify signature against public key 
+3. **Fail-closed**: INVALID if signature missing/tampered
 
 ## Usage
-
-### Generate Fixtures
-
-Generate ed25519 keys and create signed fixtures:
-
 ```bash
-cargo run --bin gen_fixtures
+cargo test --test signing -- tests/fixtures/sample.evkp
 ```
 
-This will:
-1. Generate a new ed25519 signing key using OS entropy
-2. Save the public key to `test/pubkey.hex`
-3. Sign `job.evk` content
-4. Create `job.evk.zip` containing `job.evk` and `job.evk.sig`
+## EVK Stack Integration
+`evk` → bundles → `gemini-box` → signs → `adversarial-compliance-matrix` → tests
 
-### Verify Signatures
-
-Verify the signature and detect forgeries:
-
-```bash
-cargo run --bin evk
-```
-
-This will:
-1. Load the public key from `test/pubkey.hex` (embedded at compile time)
-2. Extract `job.evk` and `job.evk.sig` from the ZIP
-3. Verify the signature
-4. Return "INVALID FORGERY DETECTED" alert if verification fails
-
-## Dependencies
-
-- `ed25519-dalek` - Ed25519 signature scheme
-- `rand_core` - OS-backed random number generation
-- `hex` - Hex encoding/decoding
-- `zip` - ZIP archive support
-
-## Related Projects
-
-This is part of a three-layer deterministic verification stack:
-- **[evk](https://github.com/DeadLee702/evk)** (Bundle validation & determinism)
-- **[gemini-box](https://github.com/DeadLee702/gemini-box)** ← You are here (Cryptographic signing & verification)
-- **[adversarial-compliance-matrix](https://github.com/DeadLee702/adversarial-compliance-matrix)** (12 incident detection tests)
-
-## License
-
-MIT License - See LICENSE file for details
+MIT Licensed. Part of EVK Stack.
