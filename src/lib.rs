@@ -1,6 +1,5 @@
 // Gemini Box library - Forensic incident classifier
 
-// Core modules
-pub mod fixture;
+pub mod e01_reader;
 
-pub use fixture::*;
+pub use e01_reader::*;
