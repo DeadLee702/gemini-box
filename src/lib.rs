@@ -1,9 +1,6 @@
-// Gemini Box library
+// Gemini Box library - Forensic incident classifier
 
-pub mod collector;
-pub mod classifier;
-pub mod signature;
+// Core modules
+pub mod fixture;
 
-pub use collector::*;
-pub use classifier::*;
-pub use signature::*;
+pub use fixture::*;
