@@ -1,4 +1,3 @@
-use std::path::PathBuf;
 use anyhow::Result;
 
 // Placeholder E01Reader - libewf-rs crate doesn't exist on crates.io

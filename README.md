@@ -15,4 +15,20 @@ cargo test --test signing -- tests/fixtures/sample.evkp
 ## EVK Stack Integration
 `evk` → bundles → `gemini-box` → signs → `adversarial-compliance-matrix` → tests
 
-MIT Licensed. Part of EVK Stack.
+## Role in the Z-12 platform
+
+Gemini-Box is the **hardened execution / signing** layer of the Z-12 Sovereign
+Security Platform. Each layer owns one responsibility:
+
+| Component | Role |
+|-----------|------|
+| **[EVK](https://github.com/DeadLee702/evk)** | Deterministic identity/integrity verification **+ Kill Vector runtime enforcement** |
+| **Gemini-Box** (this repo) | Hardened execution environment: ed25519 signing, non-repudiation, forensic (E01) analysis, **Ghost Matrix** containment |
+| **[Adversarial Compliance Matrix](https://github.com/DeadLee702/adversarial-compliance-matrix)** | Continuous runtime validation |
+
+Ed25519 signing here provides **non-repudiation** on top of EVK's deterministic
+`.evkp` hashes. Note: signing is not yet fused into EVK's own `verify` path — it
+remains a separate, composable layer. See [`docs/GHOST_MATRIX.md`](docs/GHOST_MATRIX.md)
+for the containment concept.
+
+MIT Licensed. Part of the Z-12 platform (EVK Stack).
