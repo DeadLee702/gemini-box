@@ -34,7 +34,7 @@ fn main() -> Result<()> {
     }
 
     let e01_path = &args[1];
-    
+
     println!("[*] E01Reader not yet implemented");
     println!("[*] Path provided: {}", e01_path);
     println!("[!] TODO: Integrate libewf-sys or pure Rust E01 parser");

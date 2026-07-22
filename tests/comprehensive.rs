@@ -81,19 +81,97 @@ struct CodeExpectation {
 
 fn all_known_codes() -> Vec<CodeExpectation> {
     vec![
-        CodeExpectation { code: 0x0000, confidence: 1.0, action: "allow", severity: "LOW", incident_type: "Clean" },
-        CodeExpectation { code: 0x0F2E, confidence: 0.95, action: "block", severity: "HIGH", incident_type: "Handoff Conflict" },
-        CodeExpectation { code: 0x0E1A, confidence: 0.92, action: "quarantine", severity: "HIGH", incident_type: "Race Condition" },
-        CodeExpectation { code: 0x0D44, confidence: 0.90, action: "escalate", severity: "MEDIUM", incident_type: "Orphaned Step" },
-        CodeExpectation { code: 0x1A4F, confidence: 0.98, action: "block", severity: "CRITICAL", incident_type: "Transaction Replay" },
-        CodeExpectation { code: 0x1B88, confidence: 0.88, action: "quarantine", severity: "MEDIUM", incident_type: "Schema Mutation" },
-        CodeExpectation { code: 0x1C2B, confidence: 0.96, action: "escalate", severity: "CRITICAL", incident_type: "Log Truncation" },
-        CodeExpectation { code: 0x2A90, confidence: 0.94, action: "block", severity: "HIGH", incident_type: "Packet Modification" },
-        CodeExpectation { code: 0x2B11, confidence: 0.85, action: "escalate", severity: "MEDIUM", incident_type: "Timestamp Drift" },
-        CodeExpectation { code: 0x2C7F, confidence: 0.97, action: "block", severity: "CRITICAL", incident_type: "API Spoofing" },
-        CodeExpectation { code: 0x3A01, confidence: 0.91, action: "quarantine", severity: "HIGH", incident_type: "Prompt Injection" },
-        CodeExpectation { code: 0x3B99, confidence: 0.99, action: "escalate", severity: "CRITICAL", incident_type: "Entropy Leakage" },
-        CodeExpectation { code: 0x3C4D, confidence: 0.93, action: "block", severity: "CRITICAL", incident_type: "Register Forgery" },
+        CodeExpectation {
+            code: 0x0000,
+            confidence: 1.0,
+            action: "allow",
+            severity: "LOW",
+            incident_type: "Clean",
+        },
+        CodeExpectation {
+            code: 0x0F2E,
+            confidence: 0.95,
+            action: "block",
+            severity: "HIGH",
+            incident_type: "Handoff Conflict",
+        },
+        CodeExpectation {
+            code: 0x0E1A,
+            confidence: 0.92,
+            action: "quarantine",
+            severity: "HIGH",
+            incident_type: "Race Condition",
+        },
+        CodeExpectation {
+            code: 0x0D44,
+            confidence: 0.90,
+            action: "escalate",
+            severity: "MEDIUM",
+            incident_type: "Orphaned Step",
+        },
+        CodeExpectation {
+            code: 0x1A4F,
+            confidence: 0.98,
+            action: "block",
+            severity: "CRITICAL",
+            incident_type: "Transaction Replay",
+        },
+        CodeExpectation {
+            code: 0x1B88,
+            confidence: 0.88,
+            action: "quarantine",
+            severity: "MEDIUM",
+            incident_type: "Schema Mutation",
+        },
+        CodeExpectation {
+            code: 0x1C2B,
+            confidence: 0.96,
+            action: "escalate",
+            severity: "CRITICAL",
+            incident_type: "Log Truncation",
+        },
+        CodeExpectation {
+            code: 0x2A90,
+            confidence: 0.94,
+            action: "block",
+            severity: "HIGH",
+            incident_type: "Packet Modification",
+        },
+        CodeExpectation {
+            code: 0x2B11,
+            confidence: 0.85,
+            action: "escalate",
+            severity: "MEDIUM",
+            incident_type: "Timestamp Drift",
+        },
+        CodeExpectation {
+            code: 0x2C7F,
+            confidence: 0.97,
+            action: "block",
+            severity: "CRITICAL",
+            incident_type: "API Spoofing",
+        },
+        CodeExpectation {
+            code: 0x3A01,
+            confidence: 0.91,
+            action: "quarantine",
+            severity: "HIGH",
+            incident_type: "Prompt Injection",
+        },
+        CodeExpectation {
+            code: 0x3B99,
+            confidence: 0.99,
+            action: "escalate",
+            severity: "CRITICAL",
+            incident_type: "Entropy Leakage",
+        },
+        CodeExpectation {
+            code: 0x3C4D,
+            confidence: 0.93,
+            action: "block",
+            severity: "CRITICAL",
+            incident_type: "Register Forgery",
+        },
     ]
 }
 
@@ -101,14 +179,42 @@ fn all_known_codes() -> Vec<CodeExpectation> {
 fn test_all_known_status_codes() {
     for exp in all_known_codes() {
         let analysis = TriageAnalysis::new("test.evkp", exp.code, exp.incident_type);
-        assert_eq!(analysis.raw_code, exp.code, "raw_code mismatch for 0x{:04X}", exp.code);
-        assert_eq!(analysis.status_code, format!("0x{:04X}", exp.code), "status_code format for 0x{:04X}", exp.code);
-        assert_eq!(analysis.confidence, exp.confidence, "confidence for 0x{:04X}", exp.code);
-        assert_eq!(analysis.recommended_action, exp.action, "action for 0x{:04X}", exp.code);
-        assert_eq!(analysis.severity, exp.severity, "severity for 0x{:04X}", exp.code);
+        assert_eq!(
+            analysis.raw_code, exp.code,
+            "raw_code mismatch for 0x{:04X}",
+            exp.code
+        );
+        assert_eq!(
+            analysis.status_code,
+            format!("0x{:04X}", exp.code),
+            "status_code format for 0x{:04X}",
+            exp.code
+        );
+        assert_eq!(
+            analysis.confidence, exp.confidence,
+            "confidence for 0x{:04X}",
+            exp.code
+        );
+        assert_eq!(
+            analysis.recommended_action, exp.action,
+            "action for 0x{:04X}",
+            exp.code
+        );
+        assert_eq!(
+            analysis.severity, exp.severity,
+            "severity for 0x{:04X}",
+            exp.code
+        );
         assert_eq!(analysis.incident_type, exp.incident_type);
-        assert!(analysis.chain_of_custody_valid, "chain_of_custody should be true by default");
-        assert!(!analysis.analysis.is_empty(), "analysis text should not be empty for 0x{:04X}", exp.code);
+        assert!(
+            analysis.chain_of_custody_valid,
+            "chain_of_custody should be true by default"
+        );
+        assert!(
+            !analysis.analysis.is_empty(),
+            "analysis text should not be empty for 0x{:04X}",
+            exp.code
+        );
     }
 }
 
@@ -147,10 +253,26 @@ fn test_json_serialization_all_codes() {
     for exp in all_known_codes() {
         let analysis = TriageAnalysis::new("test.evkp", exp.code, exp.incident_type);
         let json = analysis.to_json().expect("JSON serialization failed");
-        assert!(json.contains(&format!("0x{:04X}", exp.code)), "JSON should contain hex code for 0x{:04X}", exp.code);
-        assert!(json.contains(exp.incident_type), "JSON should contain incident type for 0x{:04X}", exp.code);
-        assert!(json.contains(exp.action), "JSON should contain action for 0x{:04X}", exp.code);
-        assert!(json.contains(exp.severity), "JSON should contain severity for 0x{:04X}", exp.code);
+        assert!(
+            json.contains(&format!("0x{:04X}", exp.code)),
+            "JSON should contain hex code for 0x{:04X}",
+            exp.code
+        );
+        assert!(
+            json.contains(exp.incident_type),
+            "JSON should contain incident type for 0x{:04X}",
+            exp.code
+        );
+        assert!(
+            json.contains(exp.action),
+            "JSON should contain action for 0x{:04X}",
+            exp.code
+        );
+        assert!(
+            json.contains(exp.severity),
+            "JSON should contain severity for 0x{:04X}",
+            exp.code
+        );
         assert!(json.contains("chain_of_custody_valid"));
         assert!(json.contains("raw_code"));
     }
@@ -185,8 +307,12 @@ fn test_json_array_serialization() {
 #[test]
 fn test_confidence_range_valid() {
     for exp in all_known_codes() {
-        assert!(exp.confidence > 0.0 && exp.confidence <= 1.0,
-            "confidence {} out of range for 0x{:04X}", exp.confidence, exp.code);
+        assert!(
+            exp.confidence > 0.0 && exp.confidence <= 1.0,
+            "confidence {} out of range for 0x{:04X}",
+            exp.confidence,
+            exp.code
+        );
     }
     let unknown = TriageAnalysis::new("test.evkp", 0xBEEF, "Unknown");
     assert!(unknown.confidence > 0.0 && unknown.confidence <= 1.0);
@@ -196,8 +322,12 @@ fn test_confidence_range_valid() {
 fn test_severity_levels_are_valid() {
     let valid_severities = ["LOW", "MEDIUM", "HIGH", "CRITICAL"];
     for exp in all_known_codes() {
-        assert!(valid_severities.contains(&exp.severity),
-            "invalid severity {} for 0x{:04X}", exp.severity, exp.code);
+        assert!(
+            valid_severities.contains(&exp.severity),
+            "invalid severity {} for 0x{:04X}",
+            exp.severity,
+            exp.code
+        );
     }
 }
 
@@ -205,8 +335,12 @@ fn test_severity_levels_are_valid() {
 fn test_actions_are_valid() {
     let valid_actions = ["allow", "block", "quarantine", "escalate"];
     for exp in all_known_codes() {
-        assert!(valid_actions.contains(&exp.action),
-            "invalid action {} for 0x{:04X}", exp.action, exp.code);
+        assert!(
+            valid_actions.contains(&exp.action),
+            "invalid action {} for 0x{:04X}",
+            exp.action,
+            exp.code
+        );
     }
     let unknown = TriageAnalysis::new("test.evkp", 0xDEAD, "Unknown");
     assert!(valid_actions.contains(&unknown.recommended_action.as_str()));
@@ -214,7 +348,11 @@ fn test_actions_are_valid() {
 
 #[test]
 fn test_file_path_preserved() {
-    for path in ["incident_7f3a.evkp", "/abs/path/to/file.evkp", "relative/path.evkp"] {
+    for path in [
+        "incident_7f3a.evkp",
+        "/abs/path/to/file.evkp",
+        "relative/path.evkp",
+    ] {
         let analysis = TriageAnalysis::new(path, 0x0000, "Clean");
         assert_eq!(analysis.file_path, path);
     }
@@ -258,12 +396,18 @@ impl TempDir {
         fs::create_dir_all(&path).unwrap();
         TempDir { path }
     }
-    fn join(&self, name: &str) -> PathBuf { self.path.join(name) }
-    fn join_s(&self, name: String) -> PathBuf { self.path.join(name) }
+    fn join(&self, name: &str) -> PathBuf {
+        self.path.join(name)
+    }
+    fn join_s(&self, name: String) -> PathBuf {
+        self.path.join(name)
+    }
 }
 
 impl Drop for TempDir {
-    fn drop(&mut self) { let _ = fs::remove_dir_all(&self.path); }
+    fn drop(&mut self) {
+        let _ = fs::remove_dir_all(&self.path);
+    }
 }
 
 fn write_incident(path: &PathBuf, code: u16, payload: &[u8]) {
@@ -348,7 +492,7 @@ fn test_analyze_incident_big_endian_parsing() {
 fn cargo_bin(name: &str) -> PathBuf {
     let mut path = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
     path.push("target");
-    path.push("debug");
+    path.push("release");
     path.push(name);
     path
 }
@@ -361,16 +505,25 @@ fn test_gen_fixtures_creates_files() {
         .output()
         .expect("failed to run gen_fixtures");
 
-    assert!(output.status.success(),
-        "gen_fixtures failed: {}", String::from_utf8_lossy(&output.stderr));
-    assert!(tmp.join("test/pubkey.hex").exists(), "pubkey.hex not created");
+    assert!(
+        output.status.success(),
+        "gen_fixtures failed: {}",
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(
+        tmp.join("test/pubkey.hex").exists(),
+        "pubkey.hex not created"
+    );
     assert!(tmp.join("job.evk").exists(), "job.evk not created");
     assert!(tmp.join("job.evk.zip").exists(), "job.evk.zip not created");
 
     // Verify pubkey is 32 bytes in hex (64 chars)
     let pubkey_hex = fs::read_to_string(tmp.join("test/pubkey.hex")).unwrap();
     assert_eq!(pubkey_hex.trim().len(), 64, "pubkey hex should be 64 chars");
-    assert!(hex::decode(pubkey_hex.trim()).is_ok(), "pubkey hex is valid hex");
+    assert!(
+        hex::decode(pubkey_hex.trim()).is_ok(),
+        "pubkey hex is valid hex"
+    );
 }
 
 #[test]
@@ -392,12 +545,18 @@ fn test_gen_fixtures_zip_contains_expected_entries() {
 
     // Read job.evk content
     let mut evk_content = Vec::new();
-    zip.by_name("job.evk").unwrap().read_to_end(&mut evk_content).unwrap();
+    zip.by_name("job.evk")
+        .unwrap()
+        .read_to_end(&mut evk_content)
+        .unwrap();
     assert!(!evk_content.is_empty());
 
     // Read signature
     let mut sig_content = Vec::new();
-    zip.by_name("job.evk.sig").unwrap().read_to_end(&mut sig_content).unwrap();
+    zip.by_name("job.evk.sig")
+        .unwrap()
+        .read_to_end(&mut sig_content)
+        .unwrap();
     let sig_str = String::from_utf8(sig_content).unwrap();
     let sig_bytes = hex::decode(sig_str.trim()).unwrap();
     assert_eq!(sig_bytes.len(), 64, "ed25519 signature must be 64 bytes");
@@ -431,7 +590,10 @@ fn test_gen_fixtures_is_deterministic_for_same_job_evk() {
     let pubkey2 = fs::read_to_string(tmp.join("test/pubkey.hex")).unwrap();
 
     // Public keys should differ (random key each time)
-    assert_ne!(pubkey1, pubkey2, "each gen_fixtures run should generate a new key");
+    assert_ne!(
+        pubkey1, pubkey2,
+        "each gen_fixtures run should generate a new key"
+    );
 
     // But job.evk content should be unchanged
     let evk = fs::read(tmp.join("job.evk")).unwrap();
@@ -462,7 +624,10 @@ fn test_e01_extract_no_args_exits_nonzero() {
     let output = std::process::Command::new(cargo_bin("e01_extract"))
         .output()
         .expect("failed to run e01_extract");
-    assert!(!output.status.success(), "should exit non-zero with no args");
+    assert!(
+        !output.status.success(),
+        "should exit non-zero with no args"
+    );
     let stderr = String::from_utf8_lossy(&output.stderr);
     assert!(stderr.contains("Usage") || stderr.contains("usage"));
 }

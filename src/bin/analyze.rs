@@ -7,28 +7,28 @@ use std::fs;
 pub struct TriageAnalysis {
     /// File path that was analyzed
     pub file_path: String,
-    
+
     /// Incident status code detected (0x0000 = clean, others = malicious)
     pub status_code: String,
-    
+
     /// Human-readable incident classification
     pub incident_type: String,
-    
+
     /// LLM's confidence level (0.0 - 1.0)
     pub confidence: f32,
-    
+
     /// Detailed analysis from the LLM
     pub analysis: String,
-    
+
     /// Recommended action (allow, block, quarantine, escalate)
     pub recommended_action: String,
-    
+
     /// Severity level: LOW, MEDIUM, HIGH, CRITICAL
     pub severity: String,
-    
+
     /// Chain of custody: signature verification status
     pub chain_of_custody_valid: bool,
-    
+
     /// Raw incident code as u16
     pub raw_code: u16,
 }

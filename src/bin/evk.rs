@@ -1,4 +1,4 @@
-use ed25519_dalek::{Signature, VerifyingKey, Verifier};
+use ed25519_dalek::{Signature, Verifier, VerifyingKey};
 use std::io::Read;
 use zip::ZipArchive;
 
@@ -14,7 +14,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let pubkey_bytes = hex::decode(PUBKEY_HEX.trim())
         .map_err(|e| format!("Failed to decode public key hex: {}", e))?;
 
-    let pubkey_array: [u8; 32] = pubkey_bytes.as_slice().try_into()
+    let pubkey_array: [u8; 32] = pubkey_bytes
+        .as_slice()
+        .try_into()
         .map_err(|_| "Public key must be exactly 32 bytes")?;
 
     let verify_key = VerifyingKey::from_bytes(&pubkey_array)
@@ -27,8 +29,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let file = std::fs::File::open(zip_path)
         .map_err(|e| format!("Failed to open ZIP file {}: {}", zip_path, e))?;
 
-    let mut archive = ZipArchive::new(file)
-        .map_err(|e| format!("Failed to read ZIP archive: {}", e))?;
+    let mut archive =
+        ZipArchive::new(file).map_err(|e| format!("Failed to read ZIP archive: {}", e))?;
 
     // Extract job.evk content
     let mut job_evk_content = Vec::new();
@@ -38,7 +40,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .read_to_end(&mut job_evk_content)
         .map_err(|e| format!("Failed to read job.evk: {}", e))?;
 
-    println!("✓ Extracted job.evk from ZIP ({} bytes)", job_evk_content.len());
+    println!(
+        "✓ Extracted job.evk from ZIP ({} bytes)",
+        job_evk_content.len()
+    );
 
     // Extract signature from ZIP
     let mut signature_bytes_vec = Vec::new();
@@ -59,9 +64,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .map_err(|e| format!("Failed to decode signature hex: {}", e))?;
 
     // Convert to fixed array and create Signature (no map_err needed)
-    let signature_array: [u8; 64] = signature_bytes.as_slice().try_into()
+    let signature_array: [u8; 64] = signature_bytes
+        .as_slice()
+        .try_into()
         .map_err(|_| "Signature must be exactly 64 bytes")?;
-    
+
     let signature = Signature::from_bytes(&signature_array);
 
     // Verify the signature using the Verifier trait

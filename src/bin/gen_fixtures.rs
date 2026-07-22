@@ -1,10 +1,10 @@
-use ed25519_dalek::{SigningKey, Signer};
+use ed25519_dalek::{Signer, SigningKey};
 use rand_core::{OsRng, RngCore};
 use std::fs;
 use std::io::Write;
 use std::path::Path;
-use zip::ZipWriter;
 use zip::write::FileOptions;
+use zip::ZipWriter;
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Ensure test directory exists
@@ -13,7 +13,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Generate a random 32-byte secret for ed25519-dalek v2.2
     let mut secret_bytes: [u8; 32] = [0u8; 32];
     OsRng.fill_bytes(&mut secret_bytes);
-    
+
     // Create the signing key from the secret bytes
     let signing_key = SigningKey::from_bytes(&secret_bytes);
     let verify_key = signing_key.verifying_key();
