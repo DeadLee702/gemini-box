@@ -9,7 +9,14 @@ ed25519 signing for EVK Stack evidence bundles. Adds non-repudiation to determin
 
 ## Usage
 ```bash
-cargo test --test signing -- tests/fixtures/sample.evkp
+# Generate a signed bundle (creates test/pubkey.hex, job.evk, job.evk.zip)
+cargo run --release --bin gen_fixtures
+
+# Verify the ed25519 signature in the bundle
+cargo run --release --bin evk
+
+# Run the full test suite
+cargo test --release
 ```
 
 ## EVK Stack Integration
