@@ -1,2 +1,4 @@
-// Gemini Box library - Forensic incident classifier
-// Multi-agent evidence integrity system for FIND EVIL! hackathon
+pub mod e01_reader;
+mod analyze;
+
+pub use analyze::{analyze_incident, TriageAnalysis};

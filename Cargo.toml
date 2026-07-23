@@ -3,6 +3,10 @@ name = "gemini-box"
 version = "0.1.0"
 edition = "2021"
 
+[lib]
+name = "gemini_box"
+path = "src/lib.rs"
+
 [[bin]]
 name = "gen_fixtures"
 path = "src/bin/gen_fixtures.rs"
