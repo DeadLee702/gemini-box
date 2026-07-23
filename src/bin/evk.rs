@@ -9,8 +9,13 @@ fn load_pubkey() -> Result<[u8; 32], String> {
         .map(PathBuf::from)
         .unwrap_or_else(|_| PathBuf::from("test/pubkey.hex"));
 
-    let pubkey_hex = std::fs::read_to_string(&pubkey_path)
-        .map_err(|e| format!("Failed to read public key from {}: {}", pubkey_path.display(), e))?;
+    let pubkey_hex = std::fs::read_to_string(&pubkey_path).map_err(|e| {
+        format!(
+            "Failed to read public key from {}: {}",
+            pubkey_path.display(),
+            e
+        )
+    })?;
 
     let pubkey_bytes = hex::decode(pubkey_hex.trim())
         .map_err(|e| format!("Failed to decode public key hex: {}", e))?;
@@ -38,7 +43,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let verify_key = VerifyingKey::from_bytes(&pubkey_array)
         .map_err(|e| format!("Invalid public key: {}", e))?;
 
-    println!("Loaded public key (hex): {}", hex::encode(&pubkey_array));
+    println!("Loaded public key (hex): {}", hex::encode(pubkey_array));
 
     let file = std::fs::File::open(&zip_path)
         .map_err(|e| format!("Failed to open ZIP file {}: {}", zip_path.display(), e))?;
