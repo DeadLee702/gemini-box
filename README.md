@@ -62,3 +62,58 @@ cargo test --release                      # 25 tests
 | 0x3C4D | Register Forgery | CRITICAL | block |
 
 MIT Licensed. Part of the Z-12 platform.
+
+---
+
+## Production Readiness
+
+Gemini-Box is part of the containerized Z-12 platform. It builds and runs inside the
+Docker Compose demo alongside EVK and ACM, with ed25519 key management isolated from
+the repository.
+
+### Containerized demo
+
+Gemini-Box runs as a service in the EVK `docker-compose.yml`:
+
+```yaml
+gemini:
+  image: ${DOCKER_REGISTRY}/${DOCKER_NAMESPACE}/gemini-box:latest
+  environment:
+    - GEMINI_KEY_PATH=/opt/keystore/gemini_ed25519
+  volumes:
+    - ./keystore:/opt/keystore
+```
+
+### Key management
+
+```bash
+# From the EVK repo:
+./scripts/generate_ed25519_keys.sh    # generates ed25519 keypair in $HOME/.z12/keystore
+```
+
+Keys are never stored in the repository. For production, use HashiCorp Vault, a cloud
+KMS, or an HSM (PKCS#11). The `.gitignore` in each repo excludes `.env`, private keys,
+and the keystore directory.
+
+### Environment variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `GEMINI_KEY_PATH` | `$HOME/.z12/keystore/gemini_ed25519` | ed25519 private key file |
+| `GEMINI_PUB_PATH` | `$HOME/.z12/keystore/gemini_ed25519.pub` | ed25519 public key file |
+| `DOCKER_REGISTRY` | `ghcr.io` | Container registry for releases |
+| `DOCKER_NAMESPACE` | `your-org-or-user` | Registry namespace |
+
+### CI & releases
+
+- Tagged releases (`v1.0.0`) trigger container image builds published to GHCR.
+- CI runs `cargo fmt --check`, `cargo clippy -D warnings`, `cargo audit`, and
+  `cargo test` on every push and pull request.
+- Container scanning with Trivy (`trivy image --severity HIGH,CRITICAL`).
+
+### Production checklist
+
+1. **Key management** — external keystore (Vault/HSM/KMS); never commit keys.
+2. **CI** — fmt, clippy, audit, unit + integration tests in containers.
+3. **Releases** — signed container images via GHCR on tagged releases.
+4. **Security review** — third-party audit required before production deployment.
